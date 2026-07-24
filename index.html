@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Base 2026">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="robots" content="noindex, nofollow">
+<title>Base → Greifensee</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #C8102E;
+    --dark: #0A0A0A;
+    --mid: #1A1A1A;
+    --card: #111111;
+    --border: #2A2A2A;
+    --text: #E8E6E0;
+    --muted: #888880;
+    --accent: #F0C040;
+    --bike: #378ADD;
+    --run: #D85A30;
+    --strength: #7F77DD;
+    --done: #1D9E75;
+  }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 620px; margin: 0 auto; padding: 1rem 0.85rem 4rem; }
+
+  /* HEADER */
+  .top { border-bottom: 1px solid var(--border); padding-bottom: 0.9rem; margin-bottom: 0.9rem; }
+  .top-eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.18em;
+    color: var(--muted); text-transform: uppercase;
+  }
+  .top-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 0.95;
+    letter-spacing: 0.02em; margin-top: 2px;
+  }
+  .top-title span { color: var(--red); }
+  .countdown {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 5px;
+  }
+  .countdown b { color: var(--accent); font-weight: 500; }
+
+  /* WEEK TABS */
+  .tabs {
+    display: flex; gap: 5px; overflow-x: auto; padding: 0 0 8px;
+    margin-bottom: 0.9rem; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 3px;
+    color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    padding: 8px 12px; cursor: pointer; line-height: 1.3; text-align: center; min-height: 44px;
+  }
+  .tab small { display: block; font-size: 9px; opacity: 0.65; }
+  .tab.active { border-color: var(--accent); color: var(--accent); background: #17140A; }
+  .tab.race { border-left: 3px solid var(--red); }
+  .tab .dot {
+    display: block; height: 2px; margin-top: 4px; background: var(--border); border-radius: 2px;
+  }
+  .tab .dot i { display: block; height: 2px; background: var(--done); border-radius: 2px; }
+
+  /* WEEK GOAL */
+  .goal {
+    border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    background: #100E06; padding: 0.75rem 0.9rem; margin-bottom: 0.9rem;
+  }
+  .goal .lbl {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.15em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 4px;
+  }
+  .goal .txt { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+  .goal .meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 6px; }
+
+  /* DAY CARD */
+  .day { border: 1px solid var(--border); background: var(--card); margin-bottom: 0.6rem; border-radius: 3px; }
+  .day.today { border-color: var(--accent); }
+  .day-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 0.5rem 0.75rem; background: var(--mid); border-bottom: 1px solid var(--border);
+  }
+  .day-name { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; }
+  .day-name span { color: var(--muted); font-weight: 400; margin-left: 6px; font-size: 11px; }
+  .badge-today {
+    background: var(--accent); color: #100E06; font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; padding: 2px 6px; border-radius: 2px; letter-spacing: 0.08em; margin-left: 6px;
+  }
+  .dtype { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 3px 7px; border-radius: 2px; letter-spacing: 0.06em; white-space: nowrap; }
+  .dtype.LOW  { background: #14301F; color: #7FCFA6; }
+  .dtype.MOD  { background: #16283C; color: #9CC0E8; }
+  .dtype.HIGH { background: #33200D; color: #EFB273; }
+  .dtype.LOAD { background: #350F0F; color: #EE8A8A; }
+
+  .slot {
+    display: flex; align-items: flex-start; gap: 9px;
+    padding: 0.55rem 0.75rem; border-bottom: 1px solid #191919;
+  }
+  .slot.empty { opacity: 0.42; }
+  .chk {
+    flex: 0 0 auto; width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 3px;
+    background: #0C0C0C; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: transparent; margin-top: 1px; transition: all 0.12s;
+  }
+  .chk.on { background: #0E2A20; border-color: var(--done); color: var(--done); }
+  .chk.na { opacity: 0.25; pointer-events: none; }
+  .slot-main { flex: 1 1 auto; min-width: 0; }
+  .slot-time {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .tag {
+    display: inline-block; padding: 1px 7px; border-radius: 2px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px; font-weight: 500; letter-spacing: 0.05em; margin-right: 5px; vertical-align: 1px;
+  }
+  .tag.bike { background: #185FA5; color: #C4DDF8; }
+  .tag.run { background: #993C1D; color: #F7CFC0; }
+  .tag.strength { background: #534AB7; color: #D6D3F8; }
+  .tag.mobility { background: #40501F; color: #D0E296; }
+  .tag.rest { background: #262626; color: #8A8A82; }
+  .tag.race { background: var(--red); color: #FFD9DE; }
+  .slot-txt { font-size: 12.5px; color: #ABA9A3; line-height: 1.45; }
+  .slot.on .slot-txt { color: #6E7A72; text-decoration: line-through; text-decoration-color: #2E4A3E; }
+  .copy {
+    background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; padding: 5px 8px; margin-top: 5px;
+    cursor: pointer; letter-spacing: 0.06em; min-height: 30px;
+  }
+  .copy:active { border-color: var(--accent); color: var(--accent); }
+
+  .dgoal {
+    padding: 0.5rem 0.75rem; font-size: 12px; color: #CFBE8E; line-height: 1.5;
+    border-bottom: 1px solid #191919;
+  }
+  .dgoal b { color: var(--accent); font-weight: 500; }
+  .macros { display: flex; gap: 5px; flex-wrap: wrap; padding: 0.5rem 0.75rem; border-bottom: 1px solid #191919; }
+  .mp {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 7px;
+    border: 1px solid var(--border); border-radius: 2px; color: var(--muted);
+  }
+  .mp b { font-weight: 500; }
+  .mp.kcal b { color: var(--accent); }
+  .mp.p b { color: #F0A088; }
+  .mp.c b { color: #9CC0E8; }
+  .mp.f b { color: #C6C2F0; }
+
+  .log { display: flex; gap: 5px; padding: 0.55rem 0.75rem; }
+  .log-f { flex: 1 1 0; min-width: 0; }
+  .log-f label {
+    display: block; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px;
+  }
+  .log-f input {
+    width: 100%; background: #0C0C0C; border: 1px solid var(--border); border-radius: 3px;
+    color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+    padding: 7px 6px; text-align: center; min-height: 38px;
+  }
+  .log-f input:focus { outline: none; border-color: var(--accent); }
+  .log-f input::placeholder { color: #3C3C38; }
+
+  .ready {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 0.55rem 0.75rem; border-top: 1px solid #191919; font-size: 11.5px; line-height: 1.5;
+  }
+  .ready .lamp {
+    flex: 0 0 auto; font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    padding: 3px 7px; border-radius: 2px; letter-spacing: 0.08em; margin-top: 1px;
+  }
+  .ready.g .lamp { background: #14301F; color: #7FCFA6; }
+  .ready.y .lamp { background: #33200D; color: #EFB273; }
+  .ready.r .lamp { background: #350F0F; color: #EE8A8A; }
+  .ready.g { color: #7FCFA6; }
+  .ready.y { color: #EFB273; }
+  .ready.r { color: #EE8A8A; }
+  .ready em { color: var(--muted); font-style: normal; }
+
+  .btnrow { display: flex; gap: 5px; flex-wrap: wrap; }
+  .swapbtn.armed { border-color: var(--accent); color: var(--accent); background: #17140A; }
+  .slot.armed { background: #12100A; box-shadow: inset 2px 0 0 var(--accent); }
+  .swapped {
+    display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    color: var(--accent); border: 1px solid #3A3218; border-radius: 2px;
+    padding: 1px 5px; margin-right: 5px; vertical-align: 1px;
+  }
+  .swapbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    border: 1px solid #3A3218; background: #14120A; color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    padding: 8px 10px; margin-bottom: 0.9rem; border-radius: 3px;
+  }
+  .mini {
+    background: transparent; border: 1px solid #3A3218; color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 5px 9px;
+    border-radius: 2px; cursor: pointer; white-space: nowrap; min-height: 30px;
+  }
+
+  .settings { border: 1px solid var(--border); background: var(--card); border-radius: 3px; margin-top: 1.1rem; }
+  .settings-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.7rem 0.85rem; cursor: pointer; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--muted); letter-spacing: 0.08em;
+  }
+  .settings-head.open { border-bottom: 1px solid var(--border); color: var(--accent); }
+  .settings-body { display: none; padding: 0.85rem; }
+  .settings-body.open { display: block; }
+  .fld { margin-bottom: 0.7rem; }
+  .fld label {
+    display: block; font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;
+  }
+  .fld input {
+    width: 100%; background: #0C0C0C; border: 1px solid var(--border); border-radius: 3px;
+    color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    padding: 9px 10px; min-height: 40px;
+  }
+  .fld input:focus { outline: none; border-color: var(--accent); }
+  .fld input::placeholder { color: #3C3C38; }
+  .privacy {
+    font-size: 10.5px; color: var(--muted); line-height: 1.5;
+    border-left: 2px solid #2E4A3E; padding-left: 8px; margin-bottom: 0.8rem;
+  }
+  .apiout {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; line-height: 1.5;
+    margin-top: 0.7rem; padding: 8px 10px; border-radius: 3px; white-space: pre-wrap;
+    word-break: break-word; max-height: 170px; overflow: auto; display: none;
+  }
+  .apiout.show { display: block; }
+  .apiout.ok { background: #0E2A20; border: 1px solid #1D9E75; color: #8FD4B4; }
+  .apiout.err { background: #2A0E0E; border: 1px solid #7A2020; color: #EE8A8A; }
+
+  /* FOOTER ACTIONS */
+  .actions { display: flex; flex-direction: column; gap: 7px; margin-top: 1.1rem; }
+  .btn {
+    display: block; width: 100%; background: var(--card); border: 1px solid var(--border);
+    color: var(--text); border-radius: 3px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; padding: 13px 10px; cursor: pointer; letter-spacing: 0.06em; min-height: 46px;
+  }
+  .btn:active { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { border-color: #3A3A3A; background: #15130A; color: var(--accent); }
+  .hint { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 0.9rem; }
+  .hint b { color: #B8B6B0; font-weight: 400; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(60px);
+    background: #15130A; border: 1px solid var(--accent); color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 10px 18px; border-radius: 3px;
+    opacity: 0; transition: all 0.22s; pointer-events: none; z-index: 50; max-width: 90vw; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="top-eyebrow">Basisphase · Rad + Lauf</div>
+    <div class="top-title">BASE → <span>GREIFENSEE</span></div>
+    <div class="countdown" id="countdown"></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#55554F;letter-spacing:0.1em;margin-top:3px;">
+      SPEICHER: <span id="envbadge">–</span>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="goal"></div>
+  <div id="days"></div>
+
+  <div class="actions">
+    <button class="btn primary" id="btn-zip">⤓  Woche als .zip  →  intervals.icu</button>
+    <button class="btn" id="btn-week">⧉  Woche kopieren  →  Claude</button>
+    <button class="btn" id="btn-all">⧉  Alles kopieren (Backup)</button>
+  </div>
+
+  <div class="settings">
+    <div class="settings-head" id="set-head">
+      <span>⚙  intervals.icu verbinden</span><span id="set-caret">+</span>
+    </div>
+    <div class="settings-body" id="set-body">
+      <div class="privacy">Beides wird im <b>persönlichen Speicher</b> abgelegt — privat pro Nutzer und nicht Teil des öffentlichen Codes. Wer den Link öffnet, sieht leere Felder und seinen eigenen Speicher.</div>
+      <div class="privacy" id="env-note"></div>
+      <div class="fld">
+        <label>API Key <span style="text-transform:none;letter-spacing:0">(intervals.icu → Settings → Developer Settings)</span></label>
+        <input type="password" id="cfg-key" placeholder="z.B. 4a7b…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="fld">
+        <label>Athlete ID <span style="text-transform:none;letter-spacing:0">(steht in der URL, z.B. i123456)</span></label>
+        <input type="text" id="cfg-ath" placeholder="i123456" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="actions" style="margin-top:0.4rem;">
+        <button class="btn" id="btn-test">⇢  Verbindung testen</button>
+        <button class="btn primary" id="btn-push">↑  Woche in den Kalender schreiben</button>
+      </div>
+      <div class="apiout" id="apiout"></div>
+    </div>
+  </div>
+
+  <div class="hint">
+    <b>Workout → Garmin, zwei Wege:</b><br>
+    <b>⤓ .zwo</b> (Rad) — Datei laden, in intervals.icu unter <i>Workout Library</i> per Drag &amp; Drop importieren. Auch als <b>⤓ Tag</b> und <b>⤓ Woche als .zip</b>. Von intervals.icu synct es zu Garmin Connect → Uhr und Edge.<br>
+    <b>⧉ Text / ⤓ .txt</b> (Lauf) — ZWO kennt keine HF-Ziele, deine Läufe sind aber HF-gesteuert. Darum als Text in den intervals.icu Workout-Builder einfügen.<br>
+    Downloads können auf dem Handy blockiert sein — dort ist ⧉ Text der zuverlässige Weg.<br><br>
+    <b>Ampel:</b> Sobald du RHR, Schlaf oder Gefühl einträgst, zeigt der Tag GRÜN / GELB / ROT und was das für die Einheit heisst. Die RHR-Baseline rechnet sich aus deinen eigenen Werten (Median der letzten 21 Einträge, bis dahin 65).<br><br>
+    <b>Woche kopieren</b> nimmt Plan, Häkchen, Logs und Ampel mit in den Chat — dann kann ich direkt drauf schauen.
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DATEN ============ */
+const RACE = '2026-09-19';
+const M = {
+  LOW:  {k:2150,p:175,c:175,f:85},
+  MOD:  {k:2450,p:175,c:250,f:80},
+  HIGH: {k:2900,p:170,c:390,f:75},
+  LOAD: {k:3100,p:150,c:480,f:65}
+};
+
+/* ---- ZWO-Generator (nur Rad: ZWO kennt keine HF-Ziele) ---- */
+function zwo(name, desc, steps) {
+  return `<workout_file>
+    <author>Bob</author>
+    <name>${name}</name>
+    <description>${desc}</description>
+    <sportType>bike</sportType>
+    <workout>
+${steps.map(s => '        ' + s).join('\n')}
+    </workout>
+</workout_file>`;
+}
+const WU = (s) => `<Warmup Duration="${s}" PowerLow="0.45" PowerHigh="0.62"/>`;
+const SS = (s, p) => `<SteadyState Duration="${s}" Power="${p}"/>`;
+const CD = (s) => `<Cooldown Duration="${s}" PowerLow="0.62" PowerHigh="0.42"/>`;
+const IT = (n, on, off, pon, poff) => `<IntervalsT Repeat="${n}" OnDuration="${on}" OffDuration="${off}" OnPower="${pon}" OffPower="${poff}"/>`;
+function hm(str) { const m = String(str).match(/(\d+):(\d+)/); return m ? (+m[1] * 60 + +m[2]) : 120; }
+
+/* ---- Bausteine RAD ---- */
+const bikeZ2 = (m) => ({t:'bike',l:'BIKE Z2',x:`Z2 Endurance ${m}min. HF 128–143, ~115 W. Ganze Sätze sprechbar.`,
+  ex:`Bike Z2 Endurance ${m}min\nWarmup\n- 10m ramp 45-62%\nEndurance\n- ${m-20}m 65%\nCooldown\n- 10m ramp 62-42%`,
+  fn:`Bike_Z2_${m}min`,
+  zwo:zwo(`Bike Z2 Endurance ${m}min`,`Ruhige aerobe Basis. HF 128-143 bpm. Wenn du ganze Saetze sprechen kannst, ist es richtig.`,[WU(600),SS((m-20)*60,0.65),CD(600)])});
+
+const bikeLong = (h,z3) => { const t=hm(h), mid=t-20, a=Math.round(mid*0.42), b=Math.round(mid*0.26), c=mid-a-b-10;
+  return {t:'bike',l:'LONG RIDE',x:`Z2 ${h} Hügel (Pfannenstiel/Albis).${z3?' '+z3+' Z3 an Anstiegen.':''} Fueling 40–60 g KH/h.`,
+  ex:`Bike Long Z2 ${h}\nWarmup\n- 10m ramp 45-62%\nEndurance\n- ${a}m 63%\n- 5m 85%\n- ${b}m 63%\n- 5m 85%\n- ${c}m 62%\nCooldown\n- 10m ramp 60-42%`,
+  fn:`Bike_LongRide_${h.replace('h','').replace(':','h')}`,
+  zwo:zwo(`Bike Long Z2 ${h}`,`Lange aerobe Ausfahrt. Grossteil Zone 2 (HF 128-143). Zwei Bloecke Zone 3 simulieren Anstiege. Fueling ab 90min: 40-60 g KH/h.`,[WU(600),SS(a*60,0.63),SS(300,0.85),SS(b*60,0.63),SS(300,0.85),SS(c*60,0.62),CD(600)])}; };
+
+const bikeVO2 = (n) => ({t:'bike',l:'VO2MAX',x:`${n}×3min hart / 3min locker. HF 178–190, kaum sprechbar. Indoor ohne Watt: nur HF + RPE.`,
+  ex:`Bike VO2max ${n}x3min\nWarmup\n- 10m ramp 45-70%\n- 2m 55%\n${n}x\n- 3m 110%\n- 3m 50%\nCooldown\n- 10m ramp 60-40%`,
+  fn:`Bike_VO2max_${n}x3min`,
+  zwo:zwo(`Bike VO2max ${n}x3min`,`HF ist der Chef: Ziel im Intervall 178-190 bpm. Power 110% FTP nur Richtwert. Repeatable halten - letztes Intervall so stark wie das erste.`,[WU(600),SS(120,0.55),IT(n,180,180,1.10,0.50),CD(600)])});
+
+const bikeEasy = (m) => ({t:'bike',l:'BIKE',x:`${m}min Z2 easy, flach. Keine Intensität.`,
+  ex:`Bike Easy Z2 ${m}min\nWarmup\n- 8m ramp 45-60%\nEndurance\n- ${m-16}m 62%\nCooldown\n- 8m ramp 60-42%`,
+  fn:`Bike_Easy_${m}min`,
+  zwo:zwo(`Bike Easy Z2 ${m}min`,`Lockere Ausfahrt, flach, keine Intensitaet. HF unter 143.`,[WU(480),SS((m-16)*60,0.62),CD(480)])});
+
+const spin = {t:'bike',l:'SPIN',x:'Optional Recovery-Spin 40min, HF <128. Bei Müdigkeit weglassen.',
+  ex:`Bike Recovery 40min\nWarmup\n- 5m ramp 40-50%\nEndurance\n- 30m 50%\nCooldown\n- 5m ramp 50-40%`,
+  fn:'Bike_Recovery_40min',
+  zwo:zwo('Bike Recovery Spin 40min','Reine Regeneration, HF unter 128 bpm. Hohe Trittfrequenz. Bei Muedigkeit weglassen.',[WU(300),SS(1800,0.50),CD(300)])};
+
+/* ---- Bausteine LAUF (HF-gesteuert, darum .txt statt .zwo) ---- */
+const runEasy = (km,m) => ({t:'run',l:'RUN EASY',x:`${km} km locker Z2. HF ≤150, Pace ~7:00–7:30. Ganze Sätze sprechbar.`,
+  ex:`Run Easy ${km}km Z2\nWarmup\n- 8m 120-135bpm\nEndurance\n- ${m}m 135-150bpm\nCooldown\n- 5m 120-135bpm`});
+
+const runLong = (km,m,note) => ({t:'run',l:'LONG RUN',x:`${km} km Z2. HF-Deckel 150.${note?' '+note:''}`,
+  ex:`Run Long ${km}km Z2\nWarmup\n- 10m 120-135bpm\nEndurance\n- ${m}m 135-150bpm\nCooldown\n- 5m 120-135bpm`});
+
+/* Long Run mit Renntempo-Schluss: der spezifischste Reiz im ganzen Plan */
+const runLongRP = (km,z2,rp,rpkm) => ({t:'run',l:'LONG RUN + RT',
+  x:`${km} km: erst Z2 (HF ≤150), letzte ${rpkm} km im HM-Renntempo (HF 158–165). Auf müde Beine gelegt — genau das simuliert km 16–21.`,
+  ex:`Run Long ${km}km + ${rpkm}km Renntempo\nWarmup\n- 10m 120-135bpm\nEndurance\n- ${z2}m 135-150bpm\nRace pace\n- ${rp}m 158-165bpm\nCooldown\n- 4m 120-135bpm`});
+
+const runThr = (n,min,rec) => ({t:'run',l:'SCHWELLE',
+  x:`${n}×${min}min an der Schwelle (HF 158–166), ${rec}min Trab dazwischen. Tempo: „3–4 Wörter am Stück". Nicht schneller.`,
+  ex:`Run Schwelle ${n}x${min}min\nWarmup\n- 12m 125-140bpm\n${n}x\n- ${min}m 158-166bpm\n- ${rec}m 130-145bpm\nCooldown\n- 8m 120-135bpm`});
+
+const runHMblock = {t:'run',l:'HM-TEMPO',
+  x:'5 km am Stück im HM-Renntempo (HF 158–165) + 3×5min Schwelle. Die Schlüsseleinheit vor dem Taper.',
+  ex:`Run 5km Renntempo + 3x5min Schwelle\nWarmup\n- 12m 125-140bpm\nRace pace\n- 29m 158-165bpm\n- 4m 130-145bpm\n3x\n- 5m 158-166bpm\n- 3m 130-145bpm\nCooldown\n- 8m 120-135bpm`};
+
+const runHMreps = {t:'run',l:'HM-TEMPO',
+  x:'4×1 km im Ziel-Renntempo, 400 m Trab dazwischen. Kein Volumen mehr sammeln — nur das Tempo einprägen.',
+  ex:`Run 4x1km Renntempo\nWarmup\n- 12m 125-140bpm\n4x\n- 6m 158-165bpm\n- 3m 130-145bpm\nCooldown\n- 8m 120-135bpm`};
+
+const runOpener = {t:'run',l:'OPENER',x:'4 km locker + 4×400 m im Renntempo. Beine wecken, nicht ermüden.',
+  ex:`Run Opener\nWarmup\n- 20m 125-140bpm\n4x\n- 2m 158-165bpm\n- 2m 125-140bpm\nCooldown\n- 6m 120-135bpm`};
+
+const runShake = (km) => ({t:'run',l:'SHAKEOUT',x:`${km} km ganz locker + 4×20 s Steigerungen. Nur Beine wecken.`,
+  ex:`Run Shakeout ${km}km\n- 25m 125-140bpm\n4x\n- 20s fast\n- 60s easy`});
+
+/* ---- Nicht-Ausdauer ---- */
+const prehabK = {t:'mobility',l:'PREHAB KNIE',x:'20min: Clamshells 3×15, Bulgarian Split Squats 3×8/Bein, Copenhagen Plank 3×15s/Seite.'};
+const prehabS = {t:'mobility',l:'SHIN',x:'15min: Tibialis Raises 3×20, exzentr. Waden 3×12/Bein, Einbeinstand 3×30s. Deine #1-Verletzungsprävention.'};
+const mob = {t:'mobility',l:'MOBILITY',x:'Lockeres Ausrollen / Spaziergang — Regeneration, keine Belastung.'};
+const sc = {t:'strength',l:'SKILL&CORE',x:'Turnen-Sommerersatz (fix). Ab ~September wieder reguläres Barren.'};
+const scL = {t:'strength',l:'SKILL&CORE',x:'Fix — diese Woche bewusst leicht halten.'};
+const gym = {t:'strength',l:'GYM',x:'Garage Full Body (fix). Schwer halten — Muskel schützt dein W/kg im Defizit.'};
+const gymL = {t:'strength',l:'GYM',x:'Garage, reduziert. Beine leicht, kein Muskelkater.'};
+const off = {t:'rest',l:'BÜRO'};
+const rest = {t:'rest',l:'REST'};
+const nil = null;
+
+const WEEKS = [
+{lb:'JETZT',dt:'20.–26.7',ph:'Übergang',race:0,
+ goal:'Restwoche vor dem Protokoll. Locker halten, Fueling üben, Ferritin-Termin machen. Ab Montag startet der 8-Wochen-Block.',
+ meta:'Lauf ~26 km · Rad ~4:30h · Übergang',
+ d:[
+ {d:'Mo',date:'2026-07-20',ty:'MOD',am:bikeZ2(70),mi:prehabK,ev:rest,g:'Erledigt.'},
+ {d:'Di',date:'2026-07-21',ty:'LOW',am:nil,mi:nil,ev:sc,g:'Erledigt.'},
+ {d:'Mi',date:'2026-07-22',ty:'MOD',am:runEasy(8,40),mi:off,ev:off,g:'Erledigt.'},
+ {d:'Do',date:'2026-07-23',ty:'MOD',am:bikeVO2(4),mi:mob,ev:gym,g:'Kurze 30min Z2 gefahren — Swap auf Fr genutzt.'},
+ {d:'Fr',date:'2026-07-24',ty:'MOD',am:bikeVO2(4),mi:prehabS,ev:sc,g:'Verschobene VO2max. <b>Shin-Prehab nicht skippen.</b>'},
+ {d:'Sa',date:'2026-07-25',ty:'HIGH',am:runLong(12,75,'Ab km 9 ein Gel testen.'),mi:nil,ev:rest,g:'12 km. <b>Darm trainieren</b> — ein Gel unterwegs.'},
+ {d:'So',date:'2026-07-26',ty:'HIGH',am:bikeLong('2:00h','2×5min'),mi:nil,ev:rest,g:'40 g KH/h üben. Danach: Protokoll startet.'}]},
+
+{lb:'W1',dt:'27.7–2.8',ph:'Schwelle einführen',race:0,
+ goal:'Erste Woche mit echter Schwellenarbeit — das fehlte in der Basisphase komplett. Long Run auf 14 km. Alles ausser Donnerstag bleibt konsequent leicht.',
+ meta:'Lauf ~28 km · Rad ~4:45h · Defizit ~2500 kcal',
+ d:[
+ {d:'Mo',date:'2026-07-27',ty:'MOD',am:bikeZ2(70),mi:prehabK,ev:rest,g:'HF <b>strikt unter 143</b>. Trittfrequenz 85–95.'},
+ {d:'Di',date:'2026-07-28',ty:'LOW',am:runEasy(6,32),mi:nil,ev:sc,g:'Wirklich locker. Der Lauf soll nichts kosten.'},
+ {d:'Mi',date:'2026-07-29',ty:'MOD',am:bikeVO2(4),mi:off,ev:off,g:'Aerobe Power ohne Aufprall. HF ≤190.'},
+ {d:'Do',date:'2026-07-30',ty:'HIGH',am:runThr(3,8,3),mi:mob,ev:gym,g:'<b>Erste Schwelleneinheit.</b> Vorher essen — 40–60 g KH. Nüchtern wäre verschenkte Qualität.'},
+ {d:'Fr',date:'2026-07-31',ty:'LOW',am:nil,mi:prehabS,ev:sc,g:'Beine hoch. Schienbeine nach der ersten harten Einheit checken.'},
+ {d:'Sa',date:'2026-08-01',ty:'HIGH',am:runLong(14,85,'Fueling ab km 8.'),mi:nil,ev:rest,g:'14 km Z2. HF-Deckel 150, auch wenn es zu leicht wirkt.'},
+ {d:'So',date:'2026-08-02',ty:'HIGH',am:bikeLong('2:15h','3×5min'),mi:nil,ev:rest,g:'Basis. 40–50 g KH/h.'}]},
+
+{lb:'W2',dt:'3.–9.8',ph:'Schärfen für den Test',race:0,
+ goal:'Schwellenumfang leicht rauf, dann Beine für Dienstag freimachen. Wochenende bewusst kürzer — der Test am 11.8. ist wichtiger als eine gute Trainingswoche.',
+ meta:'Lauf ~30 km · Rad ~4:15h · Taper Richtung Di',
+ d:[
+ {d:'Mo',date:'2026-08-03',ty:'MOD',am:bikeZ2(70),mi:prehabK,ev:rest,g:'Ruhig. Volumen ab Mitte Woche runter.'},
+ {d:'Di',date:'2026-08-04',ty:'LOW',am:runEasy(6,32),mi:nil,ev:sc,g:'Locker.'},
+ {d:'Mi',date:'2026-08-05',ty:'MOD',am:bikeVO2(4),mi:off,ev:off,g:'Letzte harte Radeinheit vor dem Test.'},
+ {d:'Do',date:'2026-08-06',ty:'HIGH',am:runThr(4,8,3),mi:mob,ev:gym,g:'<b>4×8min.</b> Genau das Tempo, das du am Dienstag brauchst — merk dir das Gefühl.'},
+ {d:'Fr',date:'2026-08-07',ty:'LOW',am:nil,mi:prehabS,ev:sc,g:'Erholen.'},
+ {d:'Sa',date:'2026-08-08',ty:'MOD',am:runLong(15,93,''),mi:nil,ev:rest,g:'15 km ruhig. Letzter langer Lauf vor dem Test.'},
+ {d:'So',date:'2026-08-09',ty:'MOD',am:bikeEasy(90),mi:nil,ev:rest,g:'Locker, flach, keine Z3. Beine für Dienstag sparen.'}]},
+
+{lb:'W3',dt:'10.–16.8',ph:'Kalibrierung',race:1,
+ goal:'Wägitaler Lauf 12.4 km am Dienstagabend — der harte Kalibrierungspunkt. Erste Hälfte HF 160–165, zweite steigern. HF-GURT TRAGEN. Danach volle Regeneration, keine Intensität.',
+ meta:'Zeittest · danach Recovery · Lauf ~28 km',
+ d:[
+ {d:'Mo',date:'2026-08-10',ty:'LOAD',am:runShake(4),mi:nil,ev:rest,g:'Vor-Renntag: <b>Carb-Load</b>, viel trinken, früh ins Bett. Kein Alkohol.'},
+ {d:'Di',date:'2026-08-11',ty:'LOAD',am:nil,mi:off,ev:{t:'race',l:'WÄGITAL 12.4 km',x:'Märchler Abendlauf. Ersetzt Skill&Core. Negativ-Split, HF-Gurt zwingend. Aus dieser Zeit rechne ich die HM-Prognose.'},g:'<b>Der Zeittest.</b> 1. Hälfte HF 160–165, dann steigern. Renntag = kein Defizit.'},
+ {d:'Mi',date:'2026-08-12',ty:'LOW',am:nil,mi:off,ev:off,g:'Voller Ruhetag. Muskelkater ist normal.'},
+ {d:'Do',date:'2026-08-13',ty:'MOD',am:bikeEasy(45),mi:mob,ev:gymL,g:'<b>Keine Schwelle diese Woche.</b> Zwei Tage nach Renntempo wird nicht gearbeitet.'},
+ {d:'Fr',date:'2026-08-14',ty:'LOW',am:nil,mi:prehabS,ev:sc,g:'Schienbein-Check nach Renntempo. Bei Reizung: Samstag kürzen.'},
+ {d:'Sa',date:'2026-08-15',ty:'HIGH',am:runLong(12,72,'HF ≤145, bewusst langsamer als sonst.'),mi:nil,ev:rest,g:'Regenerativ, nicht aufbauend. Kürzer mit Absicht.'},
+ {d:'So',date:'2026-08-16',ty:'HIGH',am:bikeLong('2:00h',''),mi:nil,ev:rest,g:'Ruhige Ausfahrt. Ab morgen der grosse Block.'}]},
+
+{lb:'W4',dt:'17.–23.8',ph:'Spezifik startet',race:0,
+ goal:'Ab jetzt wird es halbmarathon-spezifisch. Erste Renntempo-Arbeit auf müden Beinen im Long Run — der wichtigste Reiz der nächsten Wochen. Zielpace steht jetzt aus dem Wägital-Ergebnis.',
+ meta:'Lauf ~32 km · Rad ~5:00h · Renntempo beginnt',
+ d:[
+ {d:'Mo',date:'2026-08-17',ty:'MOD',am:bikeZ2(75),mi:prehabK,ev:rest,g:'Basis. Frisch nach der Rennwoche? Dann voll aufbauen.'},
+ {d:'Di',date:'2026-08-18',ty:'LOW',am:runEasy(7,38),mi:nil,ev:sc,g:'Locker.'},
+ {d:'Mi',date:'2026-08-19',ty:'MOD',am:bikeVO2(4),mi:off,ev:off,g:'VO2max zurück im Programm.'},
+ {d:'Do',date:'2026-08-20',ty:'HIGH',am:runThr(2,15,4),mi:mob,ev:gym,g:'<b>Längere Intervalle.</b> 15min am Stück ist mental der Sprung — Tempo halten, nicht drücken.'},
+ {d:'Fr',date:'2026-08-21',ty:'LOW',am:nil,mi:prehabS,ev:sc,g:'Erholen für Samstag.'},
+ {d:'Sa',date:'2026-08-22',ty:'HIGH',am:runLongRP(16,82,18,3),mi:nil,ev:rest,g:'<b>Erste Renntempo-Endphase.</b> Genau das simuliert km 16–21 im Rennen.'},
+ {d:'So',date:'2026-08-23',ty:'HIGH',am:bikeLong('2:30h','3×6min'),mi:nil,ev:rest,g:'50 g KH/h. Fueling-Routine festigen.'}]},
+
+{lb:'W5',dt:'24.–30.8',ph:'Volumen-Peak',race:0,
+ goal:'Höchstes Laufvolumen bisher, Long Run 17.5 km. Letzte Defizit-Woche — ab W6 wird gefuellt. Ruhepuls täglich prüfen: >5 bpm über Baseline heisst Donnerstag streichen.',
+ meta:'Lauf ~35 km · Rad ~5:00h · Defizit endet',
+ d:[
+ {d:'Mo',date:'2026-08-24',ty:'MOD',am:bikeZ2(75),mi:prehabK,ev:rest,g:'Ruhig trotz hoher Woche.'},
+ {d:'Di',date:'2026-08-25',ty:'LOW',am:runEasy(7,38),mi:nil,ev:sc,g:'Locker. Schlafqualität checken.'},
+ {d:'Mi',date:'2026-08-26',ty:'MOD',am:bikeVO2(5),mi:off,ev:off,g:'5 statt 4 — <b>nur wenn frisch</b>. Sonst bei 4 bleiben.'},
+ {d:'Do',date:'2026-08-27',ty:'HIGH',am:runThr(3,12,4),mi:mob,ev:gym,g:'36min an der Schwelle. Die härteste Laufeinheit des Plans.'},
+ {d:'Fr',date:'2026-08-28',ty:'LOW',am:nil,mi:prehabS,ev:sc,g:'Voll erholen. Morgen 17.5 km.'},
+ {d:'Sa',date:'2026-08-29',ty:'HIGH',am:runLong(17.5,112,'Fueling ab km 8, 50–60 g KH/h.'),mi:nil,ev:rest,g:'Lang und geduldig. Gehpausen an Verpflegung sind erlaubt.'},
+ {d:'So',date:'2026-08-30',ty:'HIGH',am:bikeLong('2:30h',''),mi:nil,ev:rest,g:'<b>Letzter Defizit-Tag.</b> Ab morgen wird normal gegessen.'}]},
+
+{lb:'W6',dt:'31.8–6.9',ph:'PEAK',race:0,
+ goal:'Die entscheidende Woche: 19 km Long Run mit 5 km Renntempo am Ende, dazu die spezifischste Qualitätseinheit des Plans. Ernährung neutral — im grössten Reiz wird nicht gespart.',
+ meta:'PEAK · Lauf ~38 km · neutral ~2850 kcal',
+ d:[
+ {d:'Mo',date:'2026-08-31',ty:'MOD',am:bikeZ2(70),mi:prehabK,ev:rest,g:'Basis halten, Energie sparen.'},
+ {d:'Di',date:'2026-09-01',ty:'MOD',am:runEasy(7,38),mi:nil,ev:sc,g:'Locker — in der Peak-Woche zählt Erholung doppelt.'},
+ {d:'Mi',date:'2026-09-02',ty:'MOD',am:bikeEasy(60),mi:off,ev:off,g:'VO2max raus. Beine für Do und Sa freihalten.'},
+ {d:'Do',date:'2026-09-03',ty:'HIGH',am:runHMblock,mi:mob,ev:gymL,g:'<b>Schlüsseleinheit.</b> 5 km am Stück im Zieltempo — fühlt es sich repeatable an?'},
+ {d:'Fr',date:'2026-09-04',ty:'MOD',am:nil,mi:prehabS,ev:scL,g:'Voll erholen. Morgen die längste Einheit des Plans.'},
+ {d:'Sa',date:'2026-09-05',ty:'HIGH',am:runLongRP(19,90,29,5),mi:nil,ev:rest,g:'<b>Peak-Lauf.</b> 19 km, letzte 5 im Renntempo. Wenn das sitzt, sitzt das Rennen.'},
+ {d:'So',date:'2026-09-06',ty:'HIGH',am:bikeLong('2:00h',''),mi:nil,ev:rest,g:'Locker ausfahren. <b>Peak geschafft — ab morgen Taper.</b>'}]},
+
+{lb:'W7',dt:'7.–13.9',ph:'Taper 1',race:0,
+ goal:'Volumen runter, Intensität kurz und scharf. Nicht mehr Form aufbauen, sondern die vorhandene freilegen. Kohlenhydrate hoch.',
+ meta:'Lauf ~28 km · Rad ~2:30h · Taper',
+ d:[
+ {d:'Mo',date:'2026-09-07',ty:'MOD',am:bikeEasy(50),mi:prehabK,ev:rest,g:'Kürzer. Beine sollen leichter werden.'},
+ {d:'Di',date:'2026-09-08',ty:'MOD',am:runEasy(6,32),mi:nil,ev:scL,g:'Locker. Ggf. wieder Barren — leicht halten.'},
+ {d:'Mi',date:'2026-09-09',ty:'MOD',am:bikeEasy(45),mi:off,ev:off,g:'Nur Beine lösen.'},
+ {d:'Do',date:'2026-09-10',ty:'HIGH',am:runHMreps,mi:mob,ev:gymL,g:'<b>Zieltempo einprägen.</b> Kein Volumen mehr sammeln.'},
+ {d:'Fr',date:'2026-09-11',ty:'MOD',am:nil,mi:prehabS,ev:scL,g:'Erholen.'},
+ {d:'Sa',date:'2026-09-12',ty:'HIGH',am:runLongRP(14,47,35,6),mi:nil,ev:rest,g:'<b>Letzter Formtest.</b> 6 km im Zieltempo — danach kennst du deine Pace exakt.'},
+ {d:'So',date:'2026-09-13',ty:'MOD',am:bikeEasy(60),mi:nil,ev:rest,g:'Locker. Ab jetzt nur noch Frische sammeln.'}]},
+
+{lb:'W8',dt:'14.–20.9',ph:'RENNWOCHE',race:1,
+ goal:'Greifenseelauf Samstag 19.09., 21.1 km Uster. Alles steht — jetzt nur noch nichts kaputtmachen. Erste 5 km bewusst 10–15 s/km zu langsam, dann rollen lassen.',
+ meta:'Rennwoche · HM 21.1 km · Carb-Load ab Fr',
+ d:[
+ {d:'Mo',date:'2026-09-14',ty:'MOD',am:bikeEasy(45),mi:prehabK,ev:rest,g:'Locker. Volumen deutlich runter.'},
+ {d:'Di',date:'2026-09-15',ty:'MOD',am:runEasy(5,26),mi:nil,ev:rest,g:'Kurz. Skill&Core diese Woche <b>ausgesetzt</b>.'},
+ {d:'Mi',date:'2026-09-16',ty:'MOD',am:runOpener,mi:off,ev:off,g:'Beine wecken, nicht ermüden. <b>Wettkampfschuhe anziehen.</b>'},
+ {d:'Do',date:'2026-09-17',ty:'MOD',am:{t:'bike',l:'SPIN',x:'30min ganz locker, HF <120.',ex:'Bike Spin 30min\n- 30m 48%',fn:'Bike_Spin_30min',zwo:zwo('Bike Spin 30min','Reine Lockerung in der Rennwoche. HF unter 120.',[SS(1800,0.48)])},mi:mob,ev:rest,g:'Gym pausiert. Nur lösen.'},
+ {d:'Fr',date:'2026-09-18',ty:'LOAD',am:nil,mi:{t:'mobility',l:'AUSROLLEN',x:'10min locker. Randensaft-Shot #2.'},ev:rest,g:'<b>Carb-Load ~480 g KH.</b> Viel trinken, Startnummer + Schuhe + Gels bereitlegen, früh schlafen.'},
+ {d:'Sa',date:'2026-09-19',ty:'LOAD',am:{t:'race',l:'GREIFENSEELAUF 21.1 km',x:'Frühstück T−3h (100–130 g KH). Randensaft T−2:30. Koffein 240 mg T−60min. Einlaufen T−30min. Gel bei km 7 und 14.'},mi:nil,ev:rest,g:'<b>Erste 5 km bewusst zu langsam.</b> HF unter 158 halten. Dann dein Rennen laufen, nicht das der Kumpels.'},
+ {d:'So',date:'2026-09-20',ty:'MOD',am:{t:'rest',l:'RECOVERY',x:'Ruhe oder 20–30min Spaziergang. Feiern.'},mi:nil,ev:rest,g:'Geschafft. Danach: Auswertung und Schwimmphase für Rapperswil planen.'}]}
+];
+
+/* ============ INTERVALS.ICU API ============ */
+/* Key + Athlete ID liegen im persoenlichen Speicher, nicht im oeffentlichen Code. */
+let CFG = {};
+const ICU = 'https://intervals.icu/api/v1';
+
+function icuHeaders() {
+  return {
+    'Authorization': 'Basic ' + btoa('API_KEY:' + (CFG.key || '')),
+    'Content-Type': 'application/json'
+  };
+}
+function apiOut(kind, msg) {
+  const el = $('apiout');
+  el.className = 'apiout show ' + kind;
+  el.textContent = msg;
+}
+function cfgReady() {
+  if (!CFG.key || !CFG.ath) { apiOut('err', 'API Key und Athlete ID zuerst eintragen.'); return false; }
+  return true;
+}
+
+async function icuTest() {
+  if (!cfgReady()) return;
+  apiOut('ok', 'Verbinde…');
+  try {
+    const r = await fetch(`${ICU}/athlete/${encodeURIComponent(CFG.ath)}`, { headers: icuHeaders() });
+    const body = await r.text();
+    if (!r.ok) { apiOut('err', `HTTP ${r.status}\n${body.slice(0, 400)}`); return; }
+    let name = '';
+    try { const j = JSON.parse(body); name = j.name || j.athlete?.name || ''; } catch (e) {}
+    apiOut('ok', `Verbunden${name ? ' als ' + name : ''}. Schreiben ist freigeschaltet.`);
+  } catch (e) {
+    apiOut('err', SANDBOXED
+      ? 'Anfrage blockiert (' + e.message + ').\n\nDas ist kein Zugangsdaten-Problem — ein falscher Key gäbe HTTP 401.\n'
+        + 'Der Artefakt-Sandbox lässt keine Aufrufe an fremde Domains zu.\nAuf GitHub Pages funktioniert derselbe Knopf.'
+      : 'Anfrage fehlgeschlagen (' + e.message + ').\n\nMögliche Ursachen: keine Verbindung, '
+        + 'oder intervals.icu hat die Anfrage abgewiesen. Athlete ID und Key nochmal prüfen.');
+  }
+}
+
+/* Baut aus einer Einheit ein Kalender-Event. Der Builder-Text landet in
+   der description — intervals.icu parst daraus die Struktur (auch HF-Ziele). */
+function icuEvent(day, k, s) {
+  if (!s || !s.ex) return null;
+  const type = s.t === 'bike' ? 'Ride' : (s.t === 'run' || s.t === 'race' ? 'Run' : null);
+  if (!type) return null;
+  const time = k === 'am' ? '07:00:00' : (k === 'mi' ? '12:00:00' : '18:00:00');
+  return {
+    start_date_local: `${day.date}T${time}`,
+    category: 'WORKOUT',
+    type,
+    name: `${s.l} — ${day.d}`,
+    description: s.ex
+  };
+}
+
+async function icuPushWeek() {
+  if (!cfgReady()) return;
+  const w = WEEKS[active];
+  const evs = [];
+  w.d.forEach(day => ['am', 'mi', 'ev'].forEach(k => {
+    const e = icuEvent(day, k, resolve(day.date, k));
+    if (e) evs.push(e);
+  }));
+  if (!evs.length) { apiOut('err', 'Keine übertragbare Einheit in dieser Woche.'); return; }
+
+  apiOut('ok', `Übertrage ${evs.length} Einheiten…`);
+  let ok = 0; const fails = [];
+  for (const ev of evs) {
+    try {
+      const r = await fetch(`${ICU}/athlete/${encodeURIComponent(CFG.ath)}/events`, {
+        method: 'POST', headers: icuHeaders(), body: JSON.stringify(ev)
+      });
+      if (r.ok) ok++;
+      else fails.push(`${ev.name}: HTTP ${r.status} ${(await r.text()).slice(0, 120)}`);
+    } catch (e) { fails.push(`${ev.name}: ${e.message}`); }
+  }
+  if (fails.length) apiOut('err', `${ok}/${evs.length} übertragen.\n\n` + fails.join('\n'));
+  else apiOut('ok', `${ok} Einheiten in ${w.lb} geschrieben. In intervals.icu im Kalender prüfen — von dort synct es zu Garmin.`);
+}
+
+/* ============ TAUSCH (SWAP) ============ */
+/* STATIC: feste Planpositionen. PLACE: welche Planposition steht heute wo. */
+const STATIC = {};
+let PLACE = {};
+let pending = null;
+
+function buildStatic() {
+  WEEKS.forEach(w => w.d.forEach(day => {
+    ['am', 'mi', 'ev'].forEach(k => { STATIC[day.date + '|' + k] = day[k] || null; });
+  }));
+}
+function resolve(date, k) {
+  const key = date + '|' + k;
+  return STATIC[PLACE[key] || key] ?? null;
+}
+function isSwapped(date, k) {
+  const key = date + '|' + k;
+  return PLACE[key] && PLACE[key] !== key;
+}
+function doSwap(keyA, keyB) {
+  const a = PLACE[keyA] || keyA;
+  const b = PLACE[keyB] || keyB;
+  if (b === keyA) delete PLACE[keyA]; else PLACE[keyA] = b;
+  if (a === keyB) delete PLACE[keyB]; else PLACE[keyB] = a;
+  queueSave();
+}
+function weekHasSwaps(w) {
+  return w.d.some(day => ['am', 'mi', 'ev'].some(k => isSwapped(day.date, k)));
+}
+function resetWeek(w) {
+  w.d.forEach(day => ['am', 'mi', 'ev'].forEach(k => { delete PLACE[day.date + '|' + k]; }));
+  queueSave();
+}
+
+/* ============ DATEI-EXPORT ============ */
+const CRC_T = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) { let c = i; for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c >>> 0; }
+  return t;
+})();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC_T[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+
+function makeZip(files) {
+  const enc = new TextEncoder(), parts = [], central = [];
+  let off = 0;
+  const dt = new Date();
+  const time = ((dt.getHours() << 11) | (dt.getMinutes() << 5) | (dt.getSeconds() / 2)) & 0xFFFF;
+  const date = (((dt.getFullYear() - 1980) << 9) | ((dt.getMonth() + 1) << 5) | dt.getDate()) & 0xFFFF;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = enc.encode(f.content), crc = crc32(data);
+    const lh = new Uint8Array(30 + name.length), lv = new DataView(lh.buffer);
+    lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(6, 0x0800, true);
+    lv.setUint16(10, time, true); lv.setUint16(12, date, true);
+    lv.setUint32(14, crc, true); lv.setUint32(18, data.length, true); lv.setUint32(22, data.length, true);
+    lv.setUint16(26, name.length, true);
+    lh.set(name, 30);
+    parts.push(lh, data);
+    const ch = new Uint8Array(46 + name.length), cv = new DataView(ch.buffer);
+    cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0x0800, true); cv.setUint16(12, time, true); cv.setUint16(14, date, true);
+    cv.setUint32(16, crc, true); cv.setUint32(20, data.length, true); cv.setUint32(24, data.length, true);
+    cv.setUint16(28, name.length, true); cv.setUint32(42, off, true);
+    ch.set(name, 46);
+    central.push(ch);
+    off += lh.length + data.length;
+  });
+  const cdSize = central.reduce((n, c) => n + c.length, 0);
+  const eo = new Uint8Array(22), ev = new DataView(eo.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(8, files.length, true); ev.setUint16(10, files.length, true);
+  ev.setUint32(12, cdSize, true); ev.setUint32(16, off, true);
+  return new Blob([...parts, ...central, eo], { type: 'application/zip' });
+}
+
+function saveBlob(name, blob) {
+  try {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name; a.rel = 'noopener';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 2000);
+    return true;
+  } catch (e) { return false; }
+}
+
+/* Welche Datei gehoert zu einem Slot? Rad -> .zwo, Lauf -> .txt zum Einfuegen */
+function fileFor(s, day, k) {
+  if (!s) return null;
+  const tag = `${day.d}_${day.date.slice(8)}-${day.date.slice(5, 7)}`;
+  if (s.t === 'bike' && s.zwo) return { name: `${tag}_${s.fn || 'Bike'}.zwo`, content: s.zwo, kind: 'zwo' };
+  if (s.ex) return { name: `${tag}_${(s.l || 'Einheit').replace(/[^A-Za-z0-9]/g, '')}_EINFUEGEN.txt`, content: s.ex, kind: 'txt' };
+  return null;
+}
+function weekFiles(w) {
+  const out = [];
+  w.d.forEach(day => ['am', 'mi', 'ev'].forEach(k => {
+    const f = fileFor(resolve(day.date, k), day, k);
+    if (f) out.push(f);
+  }));
+  return out;
+}
+function dayFiles(day) {
+  const out = [];
+  ['am', 'mi', 'ev'].forEach(k => { const f = fileFor(resolve(day.date, k), day, k); if (f) out.push(f); });
+  return out;
+}
+function exportFiles(files, zipName) {
+  if (!files.length) { toast('Keine exportierbare Einheit'); return; }
+  if (files.length === 1) {
+    const ok = saveBlob(files[0].name, new Blob([files[0].content], { type: 'text/plain' }));
+    toast(ok ? files[0].name : 'Download blockiert');
+  } else {
+    const ok = saveBlob(zipName, makeZip(files));
+    toast(ok ? `${files.length} Dateien → ${zipName}` : 'Download blockiert');
+  }
+}
+
+/* ============ HELPERS ============ */
+const $ = (id) => document.getElementById(id);
+const todayStr = new Date().toISOString().slice(0, 10);
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1700);
+}
+function copyText(txt, msg) {
+  const done = () => toast(msg || 'Kopiert');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(done).catch(() => fallback(txt, done));
+  } else fallback(txt, done);
+}
+function fallback(txt, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); cb(); }
+  catch (e) { toast('Kopieren nicht möglich'); }
+  document.body.removeChild(ta);
+}
+function stripTags(s) { return String(s).replace(/<[^>]+>/g, ''); }
+
+/* ============ RENDER ============ */
+let active = 0;
+
+function slotHTML(day, key, label) {
+  const s = resolve(day.date, key);
+  const slotKey = day.date + '|' + key;
+  const e = entry(day.date);
+  const isWorkout = s && s.t !== 'rest';
+  const on = !!e[key];
+  const armed = pending === slotKey;
+  const chk = isWorkout
+    ? `<div class="chk ${on ? 'on' : ''}" data-date="${day.date}" data-k="${key}">✓</div>`
+    : `<div class="chk na"></div>`;
+  const btns = [];
+  if (s && s.ex) btns.push(`<button class="copy" data-ex="${encodeURIComponent(s.ex)}">⧉ Text</button>`);
+  const file = fileFor(s, day, key);
+  if (file) btns.push(`<button class="copy dl" data-dl="${day.date}|${key}">⤓ ${file.kind === 'zwo' ? '.zwo' : '.txt'}</button>`);
+  if (isWorkout || (pending && pending !== slotKey)) {
+    btns.push(`<button class="copy swapbtn ${armed ? 'armed' : ''}" data-swap="${slotKey}">${armed ? '✕ abbrechen' : (pending ? '⇄ hierhin' : '⇄ tauschen')}</button>`);
+  }
+  const body = s
+    ? `<span class="tag ${s.t}">${s.l}</span>${isSwapped(day.date, key) ? '<span class="swapped">⇄ getauscht</span>' : ''}<span class="slot-txt">${s.x || ''}</span>` +
+      (btns.length ? `<div class="btnrow">${btns.join('')}</div>` : '')
+    : `<span class="tag rest">—</span>` + (btns.length ? `<div class="btnrow">${btns.join('')}</div>` : '');
+  return `<div class="slot ${s ? '' : 'empty'} ${on ? 'on' : ''} ${armed ? 'armed' : ''}">
+    ${chk}
+    <div class="slot-main"><div class="slot-time">${label}</div>${body}</div>
+  </div>`;
+}
+
+/* Rollende RHR-Baseline aus Kevins eigenen Logs; Fallback 65 bis genug Daten */
+function rhrBaseline() {
+  const vals = Object.keys(LOG).sort().slice(-21)
+    .map(d => LOG[d].rhr).filter(v => typeof v === 'number');
+  if (vals.length < 5) return 65;
+  vals.sort((a, b) => a - b);
+  return vals[Math.floor(vals.length / 2)];
+}
+
+const RANK = { g: 0, y: 1, r: 2 };
+function readiness(e) {
+  if (e.rhr == null && e.sl == null && e.f == null) return null;
+  let lvl = 'g';
+  const why = [];
+  const worse = (l, txt) => { if (RANK[l] > RANK[lvl]) lvl = l; if (txt) why.push(txt); };
+
+  if (e.rhr != null) {
+    const d = e.rhr - rhrBaseline();
+    if (d >= 8) worse('r', `RHR +${d}`);
+    else if (d >= 4) worse('y', `RHR +${d}`);
+  }
+  if (e.sl != null) {
+    if (e.sl < 5.5) worse('r', `Schlaf ${e.sl}h`);
+    else if (e.sl < 7) worse('y', `Schlaf ${e.sl}h`);
+  }
+  if (e.f != null) {
+    if (e.f <= 1) worse('r', `Gefühl ${e.f}/5`);
+    else if (e.f <= 2) worse('y', `Gefühl ${e.f}/5`);
+  }
+
+  const say = {
+    g: ['GRÜN', 'Plan durchziehen wie geplant.'],
+    y: ['GELB', 'Intensität raus: Einheit behalten, aber alles Z2 und ~30 % kürzer. Do-Intervalle werden zu Z2.'],
+    r: ['ROT', 'Skippen oder 20–30min Spaziergang / ganz lockerer Spin. Das ist die richtige Entscheidung, kein Ausfall.']
+  }[lvl];
+
+  return { lvl, tag: say[0], txt: say[1], why: why.join(' · ') };
+}
+
+function dayHTML(day) {
+  const m = M[day.ty];
+  const e = entry(day.date);
+  const isToday = day.date === todayStr;
+  return `<div class="day ${isToday ? 'today' : ''}">
+    <div class="day-head">
+      <div class="day-name">${day.d}<span>${day.date.slice(8)}.${day.date.slice(5,7)}.</span>${isToday ? '<span class="badge-today">HEUTE</span>' : ''}</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        ${dayFiles(day).length ? `<button class="mini" data-dlday="${day.date}">⤓ Tag</button>` : ''}
+        <div class="dtype ${day.ty}">${day.ty}</div>
+      </div>
+    </div>
+    ${slotHTML(day, 'am', 'Morgen')}
+    ${slotHTML(day, 'mi', 'Mittag')}
+    ${slotHTML(day, 'ev', 'Abend')}
+    <div class="dgoal"><b>Ziel:</b> ${day.g}</div>
+    <div class="macros">
+      <span class="mp kcal"><b>${m.k}</b> kcal</span>
+      <span class="mp p">P <b>${m.p}g</b></span>
+      <span class="mp c">C <b>${m.c}g</b></span>
+      <span class="mp f">F <b>${m.f}g</b></span>
+    </div>
+    <div class="log">
+      <div class="log-f"><label>Gew. kg</label><input type="number" step="0.1" inputmode="decimal" placeholder="–" value="${e.w ?? ''}" data-date="${day.date}" data-f="w"></div>
+      <div class="log-f"><label>RHR</label><input type="number" inputmode="numeric" placeholder="–" value="${e.rhr ?? ''}" data-date="${day.date}" data-f="rhr"></div>
+      <div class="log-f"><label>Schlaf h</label><input type="number" step="0.25" inputmode="decimal" placeholder="–" value="${e.sl ?? ''}" data-date="${day.date}" data-f="sl"></div>
+      <div class="log-f"><label>Gefühl 1-5</label><input type="number" min="1" max="5" inputmode="numeric" placeholder="–" value="${e.f ?? ''}" data-date="${day.date}" data-f="f"></div>
+    </div>
+    ${(() => {
+      const r = readiness(e);
+      if (!r) return '';
+      return `<div class="ready ${r.lvl}">
+        <span class="lamp">${r.tag}</span>
+        <span>${r.txt}${r.why ? ` <em>(${r.why})</em>` : ''}</span>
+      </div>`;
+    })()}
+  </div>`;
+}
+
+function weekStats(w) {
+  let total = 0, done = 0;
+  w.d.forEach(day => {
+    ['am','mi','ev'].forEach(k => {
+      const s = resolve(day.date, k);
+      if (s && s.t !== 'rest') { total++; if (entry(day.date)[k]) done++; }
+    });
+  });
+  return { total, done };
+}
+
+function renderTabs() {
+  $('tabs').innerHTML = WEEKS.map((w, i) => {
+    const st = weekStats(w);
+    const pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+    return `<button class="tab ${i === active ? 'active' : ''} ${w.race ? 'race' : ''}" data-i="${i}">
+      ${w.lb}<small>${w.dt}</small><span class="dot"><i style="width:${pct}%"></i></span>
+    </button>`;
+  }).join('');
+}
+
+function render() {
+  const w = WEEKS[active];
+  const st = weekStats(w);
+  renderTabs();
+  $('goal').innerHTML = `<div class="goal">
+    <div class="lbl">Wochenziel · ${w.ph}</div>
+    <div class="txt">${w.goal}</div>
+    <div class="meta">${w.meta} &nbsp;·&nbsp; ${st.done}/${st.total} Einheiten</div>
+  </div>` + (pending
+    ? `<div class="swapbar">⇄ Tausch aktiv — jetzt den Zielslot antippen.</div>`
+    : (weekHasSwaps(w)
+        ? `<div class="swapbar"><span>⇄ Diese Woche wurde umgestellt.</span><button class="mini" id="btn-reset">Zurücksetzen</button></div>`
+        : ''));
+  $('days').innerHTML = w.d.map(dayHTML).join('');
+
+  const days = Math.max(0, Math.round((new Date(RACE) - new Date(todayStr)) / 864e5));
+  $('countdown').innerHTML = `Greifenseelauf HM · 19.09.2026 · noch <b>${days} Tage</b>`;
+
+  /* nur den Tab-Streifen horizontal bewegen — die Seite bleibt, wo sie ist */
+  const tabsEl = $('tabs'), t = tabsEl.querySelector('.tab.active');
+  if (t) tabsEl.scrollLeft = t.offsetLeft - tabsEl.clientWidth / 2 + t.clientWidth / 2;
+}
+
+/* ============ EVENTS ============ */
+document.addEventListener('click', (ev) => {
+  const tab = ev.target.closest('.tab');
+  if (tab) { active = +tab.dataset.i; render(); return; }
+
+  const chk = ev.target.closest('.chk');
+  if (chk && !chk.classList.contains('na')) {
+    const e = entry(chk.dataset.date);
+    e[chk.dataset.k] = !e[chk.dataset.k];
+    queueSave(); render(); return;
+  }
+
+  const rs = ev.target.closest('#btn-reset');
+  if (rs) { resetWeek(WEEKS[active]); pending = null; render(); toast('Woche zurückgesetzt'); return; }
+
+  const dl = ev.target.closest('[data-dl]');
+  if (dl) {
+    const [date, k] = dl.dataset.dl.split('|');
+    const day = WEEKS[active].d.find(d => d.date === date);
+    const f = fileFor(resolve(date, k), day, k);
+    if (f) exportFiles([f], f.name);
+    return;
+  }
+  const dld = ev.target.closest('[data-dlday]');
+  if (dld) {
+    const day = WEEKS[active].d.find(d => d.date === dld.dataset.dlday);
+    exportFiles(dayFiles(day), `${day.date}_${day.d}_Training.zip`);
+    return;
+  }
+
+  const sw = ev.target.closest('.swapbtn');
+  if (sw) {
+    const k = sw.dataset.swap;
+    if (pending === k) { pending = null; toast('Abgebrochen'); }
+    else if (pending) {
+      doSwap(pending, k);
+      pending = null;
+      toast('Getauscht');
+    } else {
+      pending = k;
+      toast('Jetzt Zielslot antippen');
+    }
+    render();
+    return;
+  }
+
+  const cp = ev.target.closest('.copy');
+  if (cp) { copyText(decodeURIComponent(cp.dataset.ex), 'Workout kopiert'); return; }
+});
+
+document.addEventListener('input', (ev) => {
+  const inp = ev.target.closest('input[data-f]');
+  if (!inp) return;
+  const e = entry(inp.dataset.date);
+  const v = inp.value.trim();
+  if (v === '') delete e[inp.dataset.f]; else e[inp.dataset.f] = parseFloat(v);
+  queueSave();
+});
+
+/* Ampel erst beim Verlassen des Feldes neu zeichnen — sonst springt der Fokus */
+document.addEventListener('change', (ev) => {
+  if (!ev.target.closest('input[data-f]')) return;
+  const y = window.scrollY;
+  render();
+  window.scrollTo(0, y);
+});
+
+$('btn-week').addEventListener('click', () => {
+  const w = WEEKS[active];
+  const st = weekStats(w);
+  let out = `TRAININGSWOCHE ${w.lb} (${w.dt}) — ${w.ph}\nWochenziel: ${w.goal}\n${w.meta} | erledigt ${st.done}/${st.total}\n\n`;
+  w.d.forEach(day => {
+    const e = entry(day.date);
+    out += `${day.d} ${day.date} [${day.ty}]\n`;
+    [['am','Morgen'],['mi','Mittag'],['ev','Abend']].forEach(([k, lbl]) => {
+      const s = resolve(day.date, k);
+      if (!s) return;
+      const mark = (s.t !== 'rest') ? (e[k] ? '[x]' : '[ ]') : '   ';
+      out += `  ${mark} ${lbl}: ${s.l}${s.x ? ' — ' + s.x : ''}\n`;
+    });
+    const log = [];
+    if (e.w != null) log.push(`Gewicht ${e.w} kg`);
+    if (e.rhr != null) log.push(`RHR ${e.rhr}`);
+    if (e.sl != null) log.push(`Schlaf ${e.sl} h`);
+    if (e.f != null) log.push(`Gefühl ${e.f}/5`);
+    if (log.length) out += `  LOG: ${log.join(' · ')}\n`;
+    const r = readiness(e);
+    if (r) out += `  READY: ${r.tag}${r.why ? ' (' + r.why + ')' : ''}\n`;
+    out += `  Ziel: ${stripTags(day.g)}\n`;
+  });
+  out += `\nBob, schau bitte drüber.`;
+  copyText(out, 'Woche kopiert — in Claude einfügen');
+});
+
+$('set-head').addEventListener('click', () => {
+  const b = $('set-body'), hd = $('set-head');
+  const open = b.classList.toggle('open');
+  hd.classList.toggle('open', open);
+  $('set-caret').textContent = open ? '–' : '+';
+});
+['key', 'ath'].forEach(f => {
+  $('cfg-' + f).addEventListener('input', (e) => {
+    const v = e.target.value.trim();
+    if (v) CFG[f] = v; else delete CFG[f];
+    queueSave();
+  });
+});
+$('btn-test').addEventListener('click', icuTest);
+$('btn-push').addEventListener('click', icuPushWeek);
+
+$('btn-zip').addEventListener('click', () => {
+  const w = WEEKS[active];
+  exportFiles(weekFiles(w), `${w.lb}_${w.dt.replace(/[^0-9.\-]/g, '')}_Training.zip`);
+});
+
+$('btn-all').addEventListener('click', () => {
+  copyText(JSON.stringify(LOG, null, 2), 'Alle Logs kopiert');
+});
+
+/* ============ INIT ============ */
+(async function init() {
+  buildStatic();
+  await loadLog();
+  if (CFG.key) $('cfg-key').value = CFG.key;
+  if (CFG.ath) $('cfg-ath').value = CFG.ath;
+
+  const note = $('env-note');
+  if (SANDBOXED) {
+    note.style.borderLeftColor = '#7A2020'; note.style.color = '#C08080';
+    note.innerHTML = '<b>Im Artefakt blockiert.</b> Der Sandbox lässt keine Aufrufe an fremde Domains zu. '
+      + 'Auf GitHub Pages funktionieren diese Knöpfe unverändert. Bis dahin: Dateien exportieren.';
+  } else {
+    note.style.borderLeftColor = '#1D9E75'; note.style.color = '#8FD4B4';
+    note.innerHTML = '<b>Bereit.</b> Läuft auf eigener Domain — Aufrufe an intervals.icu sind möglich.';
+  }
+  $('envbadge').textContent = STORE.label;
+  const i = WEEKS.findIndex(w => w.d.some(d => d.date >= todayStr));
+  active = i < 0 ? WEEKS.length - 1 : i;
+  render();
+})();
+</script>
+</body>
+</html>
